@@ -8,6 +8,17 @@
 		<version>3.3.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	<!-- Repositorios -->
+	<repositories>
+		<repository>
+			<id>github-commons</id>
+			<url>https://maven.pkg.github.com/proyecto-sistema-sah/sistema-sah-commons-ms</url>
+		</repository>
+		<repository>
+			<id>github-seguridad</id>
+			<url>https://maven.pkg.github.com/proyecto-sistema-sah/sistema-sah-seguridad-ms</url>
+		</repository>
+	</repositories>
 	<groupId>com.sistema.sah</groupId>
 	<artifactId>reservas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -27,8 +38,8 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>22</java.version>
-	</properties>
+		<org.mapstruct.version>1.6.2</org.mapstruct.version>
+		<java.version>17</java.version>	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,6 +65,26 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.sistema.sah</groupId>
+			<artifactId>commons</artifactId>
+			<version>0.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sistema.sah</groupId>
+			<artifactId>seguridad</artifactId>
+			<version>0.0.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -61,16 +92,60 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.3.3</version> <!-- o la versión que estés usando -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
 				<configuration>
-					<excludes>
-						<exclude>
+					<encoding>UTF-8</encoding>
+					<annotationProcessorPaths>
+						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+							<version>1.18.32</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
+						<!-- other annotation processors -->
+					</annotationProcessorPaths>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>sources</id>
+						<goals>
+							<goal>sources</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>javadoc</id>
+						<goals>
+							<goal>resolve</goal>
+						</goals>
+						<configuration>
+							<classifier>javadoc</classifier>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>
