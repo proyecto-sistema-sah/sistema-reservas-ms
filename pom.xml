@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>com.sistema.sah</groupId>
 			<artifactId>seguridad</artifactId>
-			<version>0.0.18</version>
+			<version>0.0.20</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springdoc</groupId>
