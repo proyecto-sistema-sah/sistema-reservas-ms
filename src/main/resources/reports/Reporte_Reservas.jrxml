@@ -1,0 +1,65 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="Reporte_Reservas" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="29284eb6-166f-493f-a32a-13594866a514">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<query language="json"><![CDATA[]]></query>
+	<field name="codigoReserva" class="java.lang.String"/>
+	<field name="fechaInicioReserva" class="java.time.LocalDate"/>
+	<field name="fechaFinReserva" class="java.time.LocalDate"/>
+	<field name="fechaCreacionReserva" class="java.time.LocalDateTime"/>
+	<field name="fechaActualizacionReserva" class="java.time.LocalDateTime"/>
+	<field name="valorTotalReserva" class="java.math.BigDecimal"/>
+	<field name="codigoUsuarioDtoFk" class="java.lang.String"/>
+	<field name="estadoReserva" class="java.lang.String"/>
+	<title height="50">
+		<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440010" mode="Opaque" x="0" y="0" width="555" height="30" forecolor="#FFFFFF" backcolor="#4CAF50" fontSize="16.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Factura de Reserva]]></text>
+		</element>
+		<element kind="line" uuid="d0a90e9c-c75f-4de7-9c2d-f06bffdc8b73" mode="Opaque" x="0" y="35" width="555" height="1" forecolor="#4CAF50" backcolor="#FFFFFF"/>
+	</title>
+	<columnHeader height="48">
+		<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440020" mode="Opaque" x="0" y="10" width="555" height="20" forecolor="#000000" backcolor="#F2F2F2" fontSize="12.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[Datos de la Reserva]]></text>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="200">
+			<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440001" mode="Opaque" x="0" y="10" width="150" height="20" backcolor="#E0E0E0" vTextAlign="Middle">
+				<text><![CDATA[Código de Reserva:]]></text>
+			</element>
+			<element kind="textField" uuid="c31c829e-f5ce-4c58-a17d-04d37cb9ba49" x="160" y="10" width="200" height="20" vTextAlign="Middle">
+				<expression><![CDATA[$F{codigoReserva}]]></expression>
+			</element>
+			<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440002" mode="Opaque" x="0" y="40" width="150" height="20" backcolor="#E0E0E0" vTextAlign="Middle">
+				<text><![CDATA[Fecha de Inicio:]]></text>
+			</element>
+			<element kind="textField" uuid="c31c829e-f5ce-4c58-a17d-04d37cb9ba50" x="160" y="40" width="200" height="20" vTextAlign="Middle">
+				<expression><![CDATA[$F{fechaInicioReserva}]]></expression>
+			</element>
+			<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440003" mode="Opaque" x="0" y="70" width="150" height="20" backcolor="#E0E0E0" vTextAlign="Middle">
+				<text><![CDATA[Fecha de Fin:]]></text>
+			</element>
+			<element kind="textField" uuid="c31c829e-f5ce-4c58-a17d-04d37cb9ba51" x="160" y="70" width="200" height="20" vTextAlign="Middle">
+				<expression><![CDATA[$F{fechaFinReserva}]]></expression>
+			</element>
+			<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440004" mode="Opaque" x="0" y="100" width="150" height="20" backcolor="#E0E0E0" vTextAlign="Middle">
+				<text><![CDATA[Valor Total:]]></text>
+			</element>
+			<element kind="textField" uuid="c31c829e-f5ce-4c58-a17d-04d37cb9ba52" x="160" y="100" width="200" height="20" vTextAlign="Middle">
+				<expression><![CDATA[$F{valorTotalReserva}]]></expression>
+			</element>
+			<element kind="staticText" uuid="550e8400-e29b-41d4-a716-446655440005" mode="Opaque" x="0" y="130" width="150" height="20" backcolor="#E0E0E0" vTextAlign="Middle">
+				<text><![CDATA[Estado de Reserva:]]></text>
+			</element>
+			<element kind="textField" uuid="c31c829e-f5ce-4c58-a17d-04d37cb9ba53" x="160" y="130" width="200" height="20" vTextAlign="Middle">
+				<expression><![CDATA[$F{estadoReserva}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="50">
+		<element kind="line" uuid="73359dd5-d791-4f05-b599-c80e04c981e5" x="0" y="0" width="555" height="1" forecolor="#4CAF50"/>
+		<element kind="staticText" uuid="f8b3c02e-ad3a-461f-b75c-10513f6d359b" mode="Opaque" x="0" y="10" width="555" height="30" forecolor="#FFFFFF" backcolor="#4CAF50" fontSize="12.0" hTextAlign="Left" vTextAlign="Middle">
+			<text><![CDATA[Gracias por confiar en nosotros.]]></text>
+		</element>
+	</pageFooter>
+</jasperReport>

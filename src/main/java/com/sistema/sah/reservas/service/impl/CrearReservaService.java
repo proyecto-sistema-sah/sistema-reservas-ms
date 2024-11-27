@@ -8,6 +8,7 @@ import com.sistema.sah.commons.entity.embeddedid.ReservaCuartoIdEntity;
 import com.sistema.sah.commons.helper.mapper.*;
 import com.sistema.sah.reservas.dto.ReservaCuartoInputDTO;
 import com.sistema.sah.reservas.repository.*;
+import com.sistema.sah.reservas.service.ICrearReportePdfFacturaService;
 import com.sistema.sah.reservas.service.ICrearReservaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class CrearReservaService implements ICrearReservaService {
     private final CuartoServicioMapper cuartoServicioMapper;
     private final IAlimentoRepository alimentoRepository;
     private final AlimentoMapper alimentoMapper;
-
+    private final ICrearReportePdfFacturaService iCrearReportePdfFacturaService;
     /**
      * Crea una nueva reserva en el sistema.
      *
@@ -75,6 +76,7 @@ public class CrearReservaService implements ICrearReservaService {
 
             // Guardar la reserva
             reservaRepository.save(reservaMapper.dtoToEntity(reserva));
+            iCrearReportePdfFacturaService.generarReporte(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario());
             guardarReservaCuarto(reserva);
             asociarAlimentosAUsuario(reserva);
             asociarServiciosACuarto(reserva);

@@ -2,6 +2,7 @@ package com.sistema.sah.reservas.controller;
 
 import com.sistema.sah.commons.dto.RespuestaGeneralDto;
 import com.sistema.sah.reservas.dto.ReservaCuartoInputDTO;
+import com.sistema.sah.reservas.service.IConsultaReservaService;
 import com.sistema.sah.reservas.service.ICrearReservaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +23,8 @@ public class ReservaController {
 
     private final ICrearReservaService crearReservaService;
 
+    private final IConsultaReservaService iConsultaReservaService;
+
     /**
      * Crea una nueva reserva de cuarto.
      *
@@ -37,4 +40,13 @@ public class ReservaController {
                 .status(respuestaGeneralDto.getStatus())
                 .body(respuestaGeneralDto);
     }
+
+    @GetMapping("/all-usuario")
+    public ResponseEntity<RespuestaGeneralDto> consultarReservasUsuario(@RequestParam String codigoUsuario) {
+        RespuestaGeneralDto respuestaGeneralDto = iConsultaReservaService.consultarReservasUsuario(codigoUsuario);
+        return ResponseEntity
+                .status(respuestaGeneralDto.getStatus())
+                .body(respuestaGeneralDto);
+    }
+
 }
