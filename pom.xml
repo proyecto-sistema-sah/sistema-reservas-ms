@@ -24,19 +24,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>reservas</name>
 	<description>Ms de reservas que se encarga de la administracion de estos</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
 		<org.mapstruct.version>1.6.2</org.mapstruct.version>
 		<java.version>17</java.version>	</properties>
@@ -68,7 +55,7 @@
 		<dependency>
 			<groupId>com.sistema.sah</groupId>
 			<artifactId>commons</artifactId>
-			<version>0.0.19</version>
+			<version>0.0.24</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sistema.sah</groupId>
