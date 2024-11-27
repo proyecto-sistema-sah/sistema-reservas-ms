@@ -71,5 +71,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         if: success()
         with:
-          app-name: "sistema-sah-reserva"
+          app-name: "sistema-sah-reservas-ms"
           images: "brahiancg/sistema-sah-reserva:latest"
