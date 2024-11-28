@@ -38,7 +38,10 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     @Override
     public void generarReporte(String codigoUsuario) throws JRException {
-        InputStream reporteStream = getClass().getClassLoader().getResourceAsStream("Reporte_Reservas.jrxml");
+        InputStream reporteStream = getClass().getResourceAsStream("/Reporte_Reservas.jrxml");
+        if (reporteStream == null) {
+            throw new RuntimeException("Archivo no encontrado: /Reporte_Reservas.jrxml");
+        }
         // Compila el archivo .jrxml a un archivo .jasper
         JasperReport jasperReport = JasperCompileManager.compileReport(reporteStream);
         List<ReservaDto> reservaDtos = reservaMapper.listEntityTolistDto(iReservaRepository.buscarReservasUsuario(codigoUsuario));
