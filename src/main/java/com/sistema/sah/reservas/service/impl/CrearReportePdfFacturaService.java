@@ -6,7 +6,6 @@ import com.sistema.sah.commons.dto.UsuarioDto;
 import com.sistema.sah.commons.helper.enums.EstadoFacturacionEnum;
 import com.sistema.sah.commons.helper.mapper.FacturacionMapper;
 import com.sistema.sah.commons.helper.mapper.ReservaMapper;
-import com.sistema.sah.commons.helper.util.Utilidades;
 import com.sistema.sah.reservas.dto.ReservaPdfDTO;
 import com.sistema.sah.reservas.repository.IFacturacionRepository;
 import com.sistema.sah.reservas.repository.IReservaRepository;
@@ -18,7 +17,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +38,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     @Override
     public void generarReporte(String codigoUsuario) throws JRException {
-        InputStream reporteStream = getClass().getResourceAsStream("/reports/Reporte_Reservas.jrxml");
+        InputStream reporteStream = getClass().getResourceAsStream("src/main/resources/Reporte_Reservas.jrxml");
         // Compila el archivo .jrxml a un archivo .jasper
         JasperReport jasperReport = JasperCompileManager.compileReport(reporteStream);
         List<ReservaDto> reservaDtos = reservaMapper.listEntityTolistDto(iReservaRepository.buscarReservasUsuario(codigoUsuario));
