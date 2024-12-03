@@ -84,4 +84,4 @@ jobs:
 
       - name: Verify deployment
         run: |
-          curl -f https://sistema-sah-reservas-ms.azurewebsites.net || exit 1
+          curl -f https://sistema-sah-reservas-ms-cngzf4d0aacsbehr.mexicocentral-01.azurewebsites.net || exit 1
