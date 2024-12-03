@@ -31,17 +31,7 @@ jobs:
             <server><id>github-seguridad</id><username>${{ secrets.USERNAME }}</username><password>${{ secrets.TOKEN }}</password></server>
           </servers></settings>" > ~/.m2/settings.xml
 
-      # 4. Configure AWS CLI
-      - name: Configure AWS CLI
-        run: |
-          mkdir -p ~/.aws
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
-          echo "[default]" > ~/.aws/config
-          echo "region = ${{ secrets.AWS_REGION }}" >> ~/.aws/config
-
-      # 5. Cache Maven dependencies
+      # 4. Cache Maven dependencies
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
@@ -50,27 +40,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 6. Compile project
+      # 5. Compile project
       - name: Compile project
         run: mvn clean package
 
-      # 7. Copy AWS credentials to Docker context
-      - name: Copy AWS credentials to Docker context
-        run: |
-          cp -r ~/.aws .
-
-      # 8. Log in to Docker Hub
+      # 6. Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 9. Build Docker image
+      # 7. Build Docker image
       - name: Build Docker image
         run: docker build -t mariafernanda2798/reservas:latest .
 
-      # 10. Push Docker image
+      # 8. Push Docker image
       - name: Push Docker image
         run: docker push mariafernanda2798/reservas:latest
 
