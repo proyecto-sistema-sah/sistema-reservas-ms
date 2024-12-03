@@ -40,12 +40,6 @@ public class AzureBlobStorageService implements IAzureBlobStorageService {
             String archivoConExtension = nombreArchivo.endsWith(".pdf") ? nombreArchivo : nombreArchivo + ".pdf";
             BlobClient blobClient = blobContainerClient.getBlobClient(archivoConExtension);
 
-            // Contexto para depuración de firma (deshabilitar en producción)
-            Context context = new Context("Azure-Storage-Log-String-To-Sign", true);
-
-            // Comprobar existencia del archivo
-            blobClient.existsWithResponse(null, context);
-
             // Subir el archivo
             blobClient.upload(BinaryData.fromBytes(byteArchivo), true);
 
@@ -63,8 +57,12 @@ public class AzureBlobStorageService implements IAzureBlobStorageService {
     @Override
     public InputStream buscarArchivo(String nombreArchivo) {
         try {
+            // Contexto para depuración de firma (deshabilitar en producción)
+            Context context = new Context("Azure-Storage-Log-String-To-Sign", true);
             // Crear un cliente para el blob específico
             BlobClientBase blobClient = blobContainerClient.getBlobClient(nombreArchivo);
+            // Comprobar existencia del archivo
+            blobClient.existsWithResponse(null, context);
             // Verificar si el archivo existe antes de intentar descargarlo
             if (!blobClient.exists()) {
                 throw new RuntimeException("El archivo " + nombreArchivo + " no existe en Azure Blob Storage.");
