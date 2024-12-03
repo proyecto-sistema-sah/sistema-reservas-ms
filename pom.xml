@@ -102,7 +102,17 @@
 		<dependency>
 			<groupId>com.azure</groupId>
 			<artifactId>azure-storage-blob</artifactId>
-			<version>12.23.0</version> <!-- Reemplaza con la última versión disponible -->
+			<version>12.23.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-core</artifactId>
+			<version>1.41.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-identity</artifactId>
+			<version>1.10.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>

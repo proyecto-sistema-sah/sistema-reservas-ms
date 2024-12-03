@@ -1,13 +1,16 @@
 package com.sistema.sah.reservas.service.impl;
 
 import com.azure.core.util.BinaryData;
+import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.specialized.BlobClientBase;
 import com.sistema.sah.reservas.service.IAzureBlobStorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AzureBlobStorageService implements IAzureBlobStorageService {
 
     @Value("${azure.urlcompleta}")
@@ -30,20 +34,29 @@ public class AzureBlobStorageService implements IAzureBlobStorageService {
     }
 
     @Override
-    public String uploadFile(String nombreArchivo,byte[] byteArchivo) {
+    public String uploadFile(String nombreArchivo, byte[] byteArchivo) {
         try {
-            // Crear un cliente de blob para manejar el archivo
-            BlobClient blobClient = blobContainerClient.getBlobClient(nombreArchivo + ".pdf");
-            if (!blobClient.exists()) {
-                throw new RuntimeException("El archivo no existe en Blob Storage: " + nombreArchivo);
-            }
-            // Subir el contenido al blob
+            // Crear un cliente de blob
+            String archivoConExtension = nombreArchivo.endsWith(".pdf") ? nombreArchivo : nombreArchivo + ".pdf";
+            BlobClient blobClient = blobContainerClient.getBlobClient(archivoConExtension);
+
+            // Contexto para depuración de firma (deshabilitar en producción)
+            Context context = new Context("Azure-Storage-Log-String-To-Sign", true);
+
+            // Comprobar existencia del archivo
+            blobClient.existsWithResponse(null, context);
+
+            // Subir el archivo
             blobClient.upload(BinaryData.fromBytes(byteArchivo), true);
 
-            // Retornar la URL del archivo subido
+            log.info("Archivo subido exitosamente: {}", blobClient.getBlobUrl());
             return blobClient.getBlobUrl();
+        } catch (BlobStorageException e) {
+            log.error("Error de Azure Blob Storage al subir el archivo: {}", e.getMessage());
+            throw new RuntimeException("Error de Azure Blob Storage: " + e.getErrorCode(), e);
         } catch (Exception e) {
-            throw new RuntimeException("Error al subir el archivo a Azure Blob Storage", e);
+            log.error("Error inesperado al subir el archivo: {}", e.getMessage());
+            throw new RuntimeException("Error inesperado al subir el archivo", e);
         }
     }
 
