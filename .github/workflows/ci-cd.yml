@@ -26,6 +26,16 @@ jobs:
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>github-commons</id><username>${{ secrets.USERNAME }}</username><password>${{ secrets.TOKEN }}</password></server><server><id>github-seguridad</id><username>${{ secrets.USERNAME }}</username><password>${{ secrets.TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
+      # Configurar AWS CLI
+      - name: Configure AWS CLI
+        run: |
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+          echo "[default]" > ~/.aws/config
+          echo "region = ${{ secrets.AWS_REGION }}" >> ~/.aws/config
+
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
@@ -36,16 +46,6 @@ jobs:
 
       - name: Compile project
         run: mvn clean package
-
-      # Configurar AWS CLI
-      - name: Configure AWS CLI
-        run: |
-          mkdir -p ~/.aws
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
-          echo "[default]" > ~/.aws/config
-          echo "region = ${{ secrets.AWS_REGION }}" >> ~/.aws/config
 
       # Log in to Docker Hub
       - name: Log in to Docker Hub
