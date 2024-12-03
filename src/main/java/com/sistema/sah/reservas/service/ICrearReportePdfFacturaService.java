@@ -4,6 +4,6 @@ import net.sf.jasperreports.engine.JRException;
 
 public interface ICrearReportePdfFacturaService {
 
-    public void generarReporte(String codigoUsuario) throws JRException;
+     void generarReporte(String codigoUsuario) throws JRException;
 
 }

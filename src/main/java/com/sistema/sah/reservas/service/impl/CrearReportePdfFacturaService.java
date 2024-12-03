@@ -40,9 +40,8 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     @Override
     public void generarReporte(String codigoUsuario) throws JRException {
-        InputStream reporteStream = getClass().getResourceAsStream("/reports/Reporte_Reservas.jrxml");
         // Compila el archivo .jrxml a un archivo .jasper
-        JasperReport jasperReport = JasperCompileManager.compileReport(reporteStream);
+        JasperReport jasperReport =  getCompiledReport("Reporte_Reservas.jrxml");
         List<ReservaDto> reservaDtos = reservaMapper.listEntityTolistDto(iReservaRepository.buscarReservasUsuario(codigoUsuario));
         for(ReservaDto reserva : reservaDtos){
             List<ReservaPdfDTO> dataReport = new ArrayList<>();
@@ -64,6 +63,15 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     private String generarCodigoReserva() {
         return String.valueOf(10000 + new Random().nextInt(90000));
+    }
+
+    private JasperReport getCompiledReport(String nombreArchivo) throws JRException {
+        try (InputStream reportStream = iAzureBlobStorageService.buscarArchivo(nombreArchivo)) {
+            // Compilar el archivo .jrxml desde el InputStream
+            return JasperCompileManager.compileReport(reportStream);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al compilar el reporte desde el archivo: " + nombreArchivo, e);
+        }
     }
 
 }

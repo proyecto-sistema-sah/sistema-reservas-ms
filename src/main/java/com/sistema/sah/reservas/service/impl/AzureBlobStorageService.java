@@ -4,15 +4,14 @@ import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobContainerClientBuilder;
+import com.azure.storage.blob.specialized.BlobClientBase;
 import com.sistema.sah.reservas.service.IAzureBlobStorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -47,19 +46,19 @@ public class AzureBlobStorageService implements IAzureBlobStorageService {
     }
 
     @Override
-    public byte[] buscarArchivo(String nombreArchivo) {
+    public InputStream buscarArchivo(String nombreArchivo) {
         try {
-            // Crear un cliente de blob para manejar el archivo
-            BlobClient blobClient = blobContainerClient.getBlobClient(nombreArchivo);
-
-            // Descargar el archivo en un ByteArrayOutputStream
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            blobClient.download(outputStream);
-
-            // Retornar los bytes del archivo
-            return outputStream.toByteArray();
+            // Crear un cliente para el blob específico
+            BlobClientBase blobClient = blobContainerClient.getBlobClient(nombreArchivo);
+            // Verificar si el archivo existe antes de intentar descargarlo
+            if (!blobClient.exists()) {
+                throw new RuntimeException("El archivo " + nombreArchivo + " no existe en Azure Blob Storage.");
+            }
+            // Retornar el InputStream del archivo
+            return blobClient.openInputStream();
         } catch (Exception e) {
-            throw new RuntimeException("Error al buscar el archivo en Azure Blob Storage", e);
+            // Manejo genérico de errores
+            throw new RuntimeException("Error inesperado al buscar el archivo en Azure Blob Storage", e);
         }
     }
 }
