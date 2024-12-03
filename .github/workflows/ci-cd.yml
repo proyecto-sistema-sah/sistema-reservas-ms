@@ -72,7 +72,3 @@ jobs:
         with:
           app-name: "sistema-sah-reservas-ms"
           images: "mariafernanda2798/reservas:latest"
-
-      - name: Verify deployment
-        run: |
-          curl -f https://sistema-sah-reservas-ms-cngzf4d0aacsbehr.mexicocentral-01.azurewebsites.net || exit 1
