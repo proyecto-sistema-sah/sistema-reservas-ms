@@ -67,15 +67,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set environment variables in Azure
-        run: |
-          az webapp config appsettings set \
-            --name "sistema-sah-reservas-ms" \
-            --resource-group "aplicaciones-mias" \
-            --settings AWS_REGION=${{ secrets.AWS_REGION }} \
-                       AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
-                       AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
       - name: Deploy to Azure Web App for Containers
         uses: azure/webapps-deploy@v2
         with:
