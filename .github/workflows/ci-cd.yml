@@ -40,9 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # 5. Compile project
-      - name: Compile project
-        run: mvn clean package
+
 
       # 6. Configure AWS CLI
       - name: Configure AWS CLI
@@ -59,6 +57,10 @@ jobs:
         run: |
           aws configure list
           aws s3 ls # Example: List S3 buckets to validate credentials
+
+      # 5. Compile project
+      - name: Compile project
+        run: mvn clean package
 
       # 8. Log in to Docker Hub
       - name: Log in to Docker Hub
