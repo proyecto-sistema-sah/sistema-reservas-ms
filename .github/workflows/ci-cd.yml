@@ -68,13 +68,10 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set environment variables in Azure
-        uses: azure/CLI@v1
-        with:
-          azcliversion: latest
         run: |
           az webapp config appsettings set \
             --name "sistema-sah-reservas-ms" \
-            --resource-group "<tu-grupo-de-recursos>" \
+            --resource-group "aplicaciones-mias" \
             --settings AWS_REGION=${{ secrets.AWS_REGION }} \
                        AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
                        AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
