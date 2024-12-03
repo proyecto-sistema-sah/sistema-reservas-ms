@@ -1,10 +1,11 @@
 package com.sistema.sah.reservas.service;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.sistema.sah.reservas.dto.RespuestaS3DTO;
 
 import java.io.InputStream;
 
-public interface IAzureBlobStorageService {
+
+public interface IAwsS3Service {
 
     String uploadFile(String nombreArchivo,byte[] byteArchivo);
 

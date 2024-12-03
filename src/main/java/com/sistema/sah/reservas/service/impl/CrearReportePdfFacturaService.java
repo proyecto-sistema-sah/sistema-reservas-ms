@@ -7,16 +7,21 @@ import com.sistema.sah.commons.helper.enums.EstadoFacturacionEnum;
 import com.sistema.sah.commons.helper.mapper.FacturacionMapper;
 import com.sistema.sah.commons.helper.mapper.ReservaMapper;
 import com.sistema.sah.reservas.dto.ReservaPdfDTO;
+import com.sistema.sah.reservas.dto.RespuestaS3DTO;
 import com.sistema.sah.reservas.repository.IFacturacionRepository;
 import com.sistema.sah.reservas.repository.IReservaRepository;
-import com.sistema.sah.reservas.service.IAzureBlobStorageService;
+import com.sistema.sah.reservas.service.IAwsS3Service;
 import com.sistema.sah.reservas.service.ICrearReportePdfFacturaService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaService {
 
     private final IReservaRepository iReservaRepository;
@@ -34,28 +40,41 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     private final FacturacionMapper facturacionMapper;
 
-    private final IAzureBlobStorageService iAzureBlobStorageService;
+    private final IAwsS3Service iAwsS3Service;
 
     @Override
-    public void generarReporte(String codigoUsuario) throws JRException {
-        // Compila el archivo .jrxml a un archivo .jasper
-        JasperReport jasperReport =  getCompiledReport("Reporte_Reservas.jrxml");
-        List<ReservaDto> reservaDtos = reservaMapper.listEntityTolistDto(iReservaRepository.buscarReservasUsuario(codigoUsuario));
-        for(ReservaDto reserva : reservaDtos){
+    public void generarReporte(ReservaDto reservaDto) throws JRException {
+        try {
+            // Compila el archivo .jrxml a un archivo .jasper
+            JasperReport jasperReport = getCompiledReport("Reporte_Reservas.jrxml");
             List<ReservaPdfDTO> dataReport = new ArrayList<>();
-            dataReport.add(new ReservaPdfDTO(reserva, reserva.getEstadoReservaDtoFk().getNombreEstadoReserva().getDescripcion()));
+            dataReport.add(new ReservaPdfDTO(reservaDto, reservaDto.getEstadoReservaDtoFk().getNombreEstadoReserva().getDescripcion()));
+
             FacturacionDto facturacionDto = new FacturacionDto();
             facturacionDto.setCodigoFacturacion(generarCodigoReserva());
             facturacionDto.setEstadoFacturacion(EstadoFacturacionEnum.PENDIENTE);
             facturacionDto.setFechaCreacionFacturacion(LocalDateTime.now());
-            facturacionDto.setCodigoReservaDtoFk(reserva);
-            facturacionDto.setCodigoUsuarioDtoFk(UsuarioDto.builder().codigoUsuario(codigoUsuario).build());
+            facturacionDto.setCodigoReservaDtoFk(reservaDto);
+            facturacionDto.setCodigoUsuarioDtoFk(UsuarioDto.builder().codigoUsuario(reservaDto.getCodigoUsuarioDtoFk().getCodigoUsuario()).build());
+
+            // Llenar el reporte
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dataReport);
-            // Llena el reporte con datos y parámetros (si aplica)
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+
+            // Exportar a PDF
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
-            facturacionDto.setUrlPdf(iAzureBlobStorageService.uploadFile(facturacionDto.getCodigoFacturacion(), pdfBytes));
+
+            // Subir a S3
+            facturacionDto.setUrlPdf(iAwsS3Service.uploadFile(facturacionDto.getCodigoFacturacion(), pdfBytes));
+
+            // Guardar la facturación
             iFacturacionRepository.save(facturacionMapper.dtoToEntity(facturacionDto));
+        } catch (JRException e) {
+            log.error("Error generando el reporte Jasper: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al generar el reporte Jasper", e);
+        } catch (Exception e) {
+            log.error("Error inesperado al generar el reporte: {}", e.getMessage(), e);
+            throw new RuntimeException("Error inesperado al generar el reporte", e);
         }
     }
 
@@ -64,10 +83,14 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
     }
 
     private JasperReport getCompiledReport(String nombreArchivo) throws JRException {
-        try (InputStream reportStream = iAzureBlobStorageService.buscarArchivo(nombreArchivo)) {
+        try {
+            // Descargar y guardar el archivo temporalmente
+            InputStream respuestaInput = iAwsS3Service.buscarArchivo(nombreArchivo);
+
             // Compilar el archivo .jrxml desde el InputStream
-            return JasperCompileManager.compileReport(reportStream);
+            return JasperCompileManager.compileReport(respuestaInput);
         } catch (Exception e) {
+            log.error("Error {}", e.getMessage());
             throw new RuntimeException("Error al compilar el reporte desde el archivo: " + nombreArchivo, e);
         }
     }

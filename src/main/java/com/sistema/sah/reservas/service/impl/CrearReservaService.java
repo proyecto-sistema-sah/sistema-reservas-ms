@@ -4,6 +4,7 @@ import com.sistema.sah.commons.dto.*;
 import com.sistema.sah.commons.dto.embeddedid.ReservaCuartoIdDto;
 import com.sistema.sah.commons.dto.embeddedid.UsuarioAlimentoIdDto;
 import com.sistema.sah.commons.dto.embeddedid.UsuarioServicioIdDto;
+import com.sistema.sah.commons.entity.ReservaEntity;
 import com.sistema.sah.commons.entity.embeddedid.ReservaCuartoIdEntity;
 import com.sistema.sah.commons.helper.mapper.*;
 import com.sistema.sah.reservas.dto.ReservaCuartoInputDTO;
@@ -75,8 +76,8 @@ public class CrearReservaService implements ICrearReservaService {
             reserva.setValorTotalReserva(calcularValorTotalReserva(reserva, valorNoche));
 
             // Guardar la reserva
-            reservaRepository.save(reservaMapper.dtoToEntity(reserva));
-            iCrearReportePdfFacturaService.generarReporte(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario());
+            ReservaDto reservaSave = reservaMapper.entityToDto(reservaRepository.save(reservaMapper.dtoToEntity(reserva)));
+            iCrearReportePdfFacturaService.generarReporte(reservaSave);
             guardarReservaCuarto(reserva);
             asociarAlimentosAUsuario(reserva);
             asociarServiciosACuarto(reserva);
