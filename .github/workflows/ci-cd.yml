@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout del código
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -26,7 +25,6 @@ jobs:
           mkdir -p ~/.m2
           echo "<settings><servers><server><id>github-commons</id><username>${{ secrets.USERNAME }}</username><password>${{ secrets.TOKEN }}</password></server><server><id>github-seguridad</id><username>${{ secrets.USERNAME }}</username><password>${{ secrets.TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
 
-      # Configurar AWS CLI
       - name: Configure AWS CLI
         run: |
           mkdir -p ~/.aws
@@ -47,26 +45,21 @@ jobs:
       - name: Compile project
         run: mvn clean package
 
-      # Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
-        if: success()
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        if: success()
         run: docker build -t mariafernanda2798/reservas:latest .
 
       - name: Push Docker image
-        if: success()
         run: docker push mariafernanda2798/reservas:latest
 
   deploy:
-    if: success()
-    runs-on: ubuntu-latest
     needs: build
+    runs-on: ubuntu-latest
 
     steps:
       - name: Log in to Azure
@@ -74,9 +67,24 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Set environment variables in Azure
+        uses: azure/CLI@v1
+        with:
+          azcliversion: latest
+        run: |
+          az webapp config appsettings set \
+            --name "sistema-sah-reservas-ms" \
+            --resource-group "<tu-grupo-de-recursos>" \
+            --settings AWS_REGION=${{ secrets.AWS_REGION }} \
+                       AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+                       AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Deploy to Azure Web App for Containers
         uses: azure/webapps-deploy@v2
-        if: success()
         with:
           app-name: "sistema-sah-reservas-ms"
           images: "mariafernanda2798/reservas:latest"
+
+      - name: Verify deployment
+        run: |
+          curl -f https://sistema-sah-reservas-ms.azurewebsites.net || exit 1
