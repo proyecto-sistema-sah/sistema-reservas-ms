@@ -34,7 +34,9 @@ public class AzureBlobStorageService implements IAzureBlobStorageService {
         try {
             // Crear un cliente de blob para manejar el archivo
             BlobClient blobClient = blobContainerClient.getBlobClient(nombreArchivo + ".pdf");
-
+            if (!blobClient.exists()) {
+                throw new RuntimeException("El archivo no existe en Blob Storage: " + nombreArchivo);
+            }
             // Subir el contenido al blob
             blobClient.upload(BinaryData.fromBytes(byteArchivo), true);
 
