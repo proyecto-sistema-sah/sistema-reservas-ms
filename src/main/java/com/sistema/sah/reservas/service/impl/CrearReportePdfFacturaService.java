@@ -6,7 +6,6 @@ import com.sistema.sah.commons.dto.UsuarioDto;
 import com.sistema.sah.commons.helper.enums.EstadoFacturacionEnum;
 import com.sistema.sah.commons.helper.mapper.FacturacionMapper;
 import com.sistema.sah.commons.helper.mapper.ReservaMapper;
-import com.sistema.sah.commons.helper.util.Utilidades;
 import com.sistema.sah.reservas.dto.ReservaPdfDTO;
 import com.sistema.sah.reservas.repository.IFacturacionRepository;
 import com.sistema.sah.reservas.repository.IReservaRepository;
@@ -18,7 +17,6 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
