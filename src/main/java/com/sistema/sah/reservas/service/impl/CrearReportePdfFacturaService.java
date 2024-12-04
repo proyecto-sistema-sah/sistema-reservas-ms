@@ -87,7 +87,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
             return JasperCompileManager.compileReport(respuestaInput);
         } catch (Exception e) {
             log.error("Error {}", e.getMessage());
-            throw new RuntimeException("Error al compilar el reporte desde el archivo: " + nombreArchivo, e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
