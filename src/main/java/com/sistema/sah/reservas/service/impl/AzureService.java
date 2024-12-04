@@ -1,5 +1,6 @@
 package com.sistema.sah.reservas.service.impl;
 
+import com.azure.core.util.Context;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobClientBuilder;
 import com.sistema.sah.reservas.service.IAzureService;
