@@ -1,6 +1,9 @@
 # Usa una imagen base ligera de OpenJDK 17
 FROM openjdk:17-jdk-slim
 
+# Instala las dependencias necesarias
+RUN apt-get update && apt-get install -y libfreetype6 libfreetype6-dev
+
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
