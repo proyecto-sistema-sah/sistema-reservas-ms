@@ -70,7 +70,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
             throw new RuntimeException("Error al generar el reporte Jasper", e);
         } catch (Exception e) {
             log.error("Error inesperado al generar el reporte: {}", e.getMessage(), e);
-            throw new RuntimeException("Error inesperado al generar el reporte", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
