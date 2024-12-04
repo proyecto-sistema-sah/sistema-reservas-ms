@@ -73,7 +73,7 @@ public class AzureService implements IAzureService {
             return new ByteArrayInputStream(outputStream.toByteArray());
         } catch (Exception e) {
             log.error("Error al buscar el archivo en Blob Storage: {}", e.getMessage());
-            throw new RuntimeException("Error al buscar el archivo en Blob Storage", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 }
