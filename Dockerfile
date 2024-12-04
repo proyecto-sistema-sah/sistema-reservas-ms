@@ -1,8 +1,15 @@
 # Usa una imagen base ligera de OpenJDK 17
 FROM openjdk:17-jdk-slim
 
-# Instala las dependencias necesarias
-RUN apt-get update && apt-get install -y libfreetype6 libfreetype6-dev
+# Establece argumentos no interactivos para evitar prompts durante la instalación
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Instala las dependencias necesarias y configura la zona horaria
+RUN apt-get update && apt-get install -y \
+    libfreetype6 libfreetype6-dev tzdata && \
+    ln -snf /usr/share/zoneinfo/America/Bogota /etc/localtime && \
+    echo "America/Bogota" > /etc/timezone && \
+    apt-get clean
 
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
