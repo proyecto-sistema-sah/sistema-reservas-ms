@@ -7,21 +7,17 @@ import com.sistema.sah.commons.helper.enums.EstadoFacturacionEnum;
 import com.sistema.sah.commons.helper.mapper.FacturacionMapper;
 import com.sistema.sah.commons.helper.mapper.ReservaMapper;
 import com.sistema.sah.reservas.dto.ReservaPdfDTO;
-import com.sistema.sah.reservas.dto.RespuestaS3DTO;
 import com.sistema.sah.reservas.repository.IFacturacionRepository;
 import com.sistema.sah.reservas.repository.IReservaRepository;
-import com.sistema.sah.reservas.service.IAwsS3Service;
+import com.sistema.sah.reservas.service.IAzureService;
 import com.sistema.sah.reservas.service.ICrearReportePdfFacturaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +36,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
 
     private final FacturacionMapper facturacionMapper;
 
-    private final IAwsS3Service iAwsS3Service;
+    private final IAzureService iAzureService;
 
     @Override
     public void generarReporte(ReservaDto reservaDto) throws JRException {
@@ -65,7 +61,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
             // Subir a S3
-            facturacionDto.setUrlPdf(iAwsS3Service.uploadFile(facturacionDto.getCodigoFacturacion(), pdfBytes));
+            facturacionDto.setUrlPdf(iAzureService.uploadFile(facturacionDto.getCodigoFacturacion(), pdfBytes));
 
             // Guardar la facturación
             iFacturacionRepository.save(facturacionMapper.dtoToEntity(facturacionDto));
@@ -85,7 +81,7 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
     private JasperReport getCompiledReport(String nombreArchivo) throws JRException {
         try {
             // Descargar y guardar el archivo temporalmente
-            InputStream respuestaInput = iAwsS3Service.buscarArchivo(nombreArchivo);
+            InputStream respuestaInput = iAzureService.buscarArchivo(nombreArchivo);
 
             // Compilar el archivo .jrxml desde el InputStream
             return JasperCompileManager.compileReport(respuestaInput);
