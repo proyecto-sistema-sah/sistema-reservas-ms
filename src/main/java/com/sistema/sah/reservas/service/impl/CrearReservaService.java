@@ -88,7 +88,7 @@ public class CrearReservaService implements ICrearReservaService {
         } catch (Exception e) {
             log.error("Error al crear la reserva: {}", e.getMessage(), e);
             respuesta.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            respuesta.setMessage("Hubo un problema en la creación de la reserva");
+            respuesta.setMessage("Hubo un problema en la creación de la reserva " + e.getMessage());
         }
 
         return respuesta;
