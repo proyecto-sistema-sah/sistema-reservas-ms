@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio para gestionar operaciones relacionadas con la entidad {@link ReservaEntity}.
@@ -21,5 +22,7 @@ public interface IReservaRepository extends JpaRepository<ReservaEntity, String>
         SELECT r FROM ReservaEntity r where r.codigoUsuarioEntityFk.codigoUsuario = :codigoUsuario
     """)
     List<ReservaEntity> buscarReservasUsuario(@Param("codigoUsuario") String codigoUsuario);
+
+    Optional<ReservaEntity> findByCodigoReserva(String codigoReserva);
 
 }

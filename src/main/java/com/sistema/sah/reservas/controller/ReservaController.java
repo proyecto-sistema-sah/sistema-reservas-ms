@@ -1,7 +1,9 @@
 package com.sistema.sah.reservas.controller;
 
 import com.sistema.sah.commons.dto.RespuestaGeneralDto;
+import com.sistema.sah.reservas.dto.CambiarEstadoReservaDTO;
 import com.sistema.sah.reservas.dto.ReservaCuartoInputDTO;
+import com.sistema.sah.reservas.service.ICambiarEstadoReservaService;
 import com.sistema.sah.reservas.service.IConsultaReservaService;
 import com.sistema.sah.reservas.service.ICrearReservaService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ public class ReservaController {
     private final ICrearReservaService crearReservaService;
 
     private final IConsultaReservaService iConsultaReservaService;
+
+    private final ICambiarEstadoReservaService cambiarEstadoReservaService;
 
     /**
      * Crea una nueva reserva de cuarto.
@@ -49,4 +53,11 @@ public class ReservaController {
                 .body(respuestaGeneralDto);
     }
 
+    @PostMapping("/cambiar-estado")
+    public ResponseEntity<RespuestaGeneralDto> cambiarEstado(@RequestBody CambiarEstadoReservaDTO cambiarEstadoReservaDTO) {
+        RespuestaGeneralDto respuestaGeneralDto = cambiarEstadoReservaService.cambiarEstado(cambiarEstadoReservaDTO);
+        return ResponseEntity
+                .status(respuestaGeneralDto.getStatus())
+                .body(respuestaGeneralDto);
+    }
 }
