@@ -4,7 +4,9 @@ import com.sistema.sah.commons.dto.RespuestaGeneralDto;
 import com.sistema.sah.commons.dto.TipoCuartoDto;
 import com.sistema.sah.commons.helper.mapper.TipoCuartoMapper;
 import com.sistema.sah.reservas.repository.ITipoCuartoRepository;
+import com.sistema.sah.reservas.repository.IVistaTiposCuartosRepository;
 import com.sistema.sah.reservas.service.IQueryTipoCuartoService;
+import com.sistema.sah.reservas.utils.map.VistaTipoCuartoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,8 +25,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class QueryTipoCuartoService implements IQueryTipoCuartoService {
 
-    private final ITipoCuartoRepository tipoCuartoRepository;
-    private final TipoCuartoMapper tipoCuartoMapper;
+    private final IVistaTiposCuartosRepository iVistaTiposCuartosRepository;
+    private final VistaTipoCuartoMapper vistaTipoCuartoMapper;
 
     /**
      * Recupera todos los tipos de cuartos disponibles.
@@ -33,7 +35,7 @@ public class QueryTipoCuartoService implements IQueryTipoCuartoService {
      */
     @Override
     public RespuestaGeneralDto findAllTipoCuarto() {
-        List<TipoCuartoDto> tipoCuartos = tipoCuartoMapper.listEntityTolistDto(tipoCuartoRepository.findAll());
+        List<TipoCuartoDto> tipoCuartos = vistaTipoCuartoMapper.listVistaTipoCuartoToListTipoCuarto(iVistaTiposCuartosRepository.findAll());
 
         if (tipoCuartos.isEmpty()) {
             return buildRespuesta(HttpStatus.NOT_FOUND, "No se encontraron tipos de cuartos disponibles.");

@@ -11,6 +11,7 @@ import com.sistema.sah.reservas.dto.ReservaCuartoInputDTO;
 import com.sistema.sah.reservas.repository.*;
 import com.sistema.sah.reservas.service.ICrearReportePdfFacturaService;
 import com.sistema.sah.reservas.service.ICrearReservaService;
+import com.sistema.sah.reservas.utils.map.ReservaObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class CrearReservaService implements ICrearReservaService {
 
-    private final ReservaMapper reservaMapper;
+    private final ReservaObjectMapper reservaMapper;
     private final IReservaRepository reservaRepository;
     private final UsuarioAlimentoMapper usuarioAlimentoMapper;
     private final IUsuarioAlimentoRepository usuarioAlimentoRepository;
@@ -76,11 +77,14 @@ public class CrearReservaService implements ICrearReservaService {
             reserva.setValorTotalReserva(calcularValorTotalReserva(reserva, valorNoche));
 
             // Guardar la reserva
-            ReservaDto reservaSave = reservaMapper.entityToDto(reservaRepository.save(reservaMapper.dtoToEntity(reserva)));
-            iCrearReportePdfFacturaService.generarReporte(reservaSave);
-            guardarReservaCuarto(reserva);
-            asociarAlimentosAUsuario(reserva);
-            asociarServiciosACuarto(reserva);
+            reservaRepository.procesarReserva(reserva.getCodigoReserva(),
+                    reserva.getFechaInicioReserva(),
+                    reserva.getFechaFinReserva(),
+                    reserva.getValorTotalReserva(),
+                    reserva.getCodigoUsuarioDtoFk().getCodigoUsuario(),
+                    3,
+                    reserva.getCodigoCuarto());
+            iCrearReportePdfFacturaService.generarReporte(reserva);
 
             respuesta.setStatus(HttpStatus.CREATED);
             respuesta.setMessage("Se creó correctamente la reserva");
@@ -129,83 +133,4 @@ public class CrearReservaService implements ICrearReservaService {
         return valorNoche.multiply(BigDecimal.valueOf(dias));
     }
 
-    /**
-     * Guarda la asociación entre la reserva y el cuarto en la base de datos.
-     *
-     * @param reserva los datos de la reserva.
-     */
-    private void guardarReservaCuarto(ReservaCuartoInputDTO reserva) {
-        ReservaCuartoIdDto reservaCuartoIdDto = new ReservaCuartoIdDto();
-        reservaCuartoIdDto.setCodigoReservaFk(reserva.getCodigoReserva());
-        reservaCuartoIdDto.setCodigoCuartoFk(reserva.getCodigoCuarto());
-        ReservaCuartoDto reservaCuartoDto = ReservaCuartoDto.builder()
-                .id(reservaCuartoIdDto)
-                .codigoReservaDtoFk(ReservaDto.builder()
-                        .codigoReserva(reserva.getCodigoReserva())
-                        .build())
-                .codigoCuartoDtoFk(CuartoDto.builder()
-                        .codigoCuarto(reserva.getCodigoCuarto())
-                        .build())
-                .build();
-
-        reservaCuartoRepository.save(reservaCuartoMapper.dtoToEntity(reservaCuartoDto));
-    }
-
-    /**
-     * Asocia alimentos disponibles al usuario que realiza la reserva.
-     *
-     * @param reserva los datos de la reserva.
-     */
-    private void asociarAlimentosAUsuario(ReservaCuartoInputDTO reserva) {
-        List<AlimentoDto> alimentos = alimentoMapper.listEntityTolistDto(alimentoRepository.findAll());
-        for (AlimentoDto alimento : alimentos) {
-            UsuarioAlimentoDto usuarioAlimento = UsuarioAlimentoDto.builder()
-                    .id(UsuarioAlimentoIdDto.builder()
-                            .codigoAlimentoFk(alimento.getCodigoAlimento())
-                            .codigoUsuarioFk(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario())
-                            .build())
-                    .codigoUsuarioDtoFk(UsuarioDto.builder()
-                            .codigoUsuario(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario())
-                            .build())
-                    .codigoAlimentoDtoFk(AlimentoDto.builder()
-                            .codigoAlimento(alimento.getCodigoAlimento())
-                            .build())
-                    .estadoUsuarioAlimentoDtoFk(EstadoUsuarioAlimentoDto.builder()
-                            .id(1)
-                            .build())
-                    .build();
-
-            usuarioAlimentoRepository.save(usuarioAlimentoMapper.dtoToEntity(usuarioAlimento));
-        }
-    }
-
-    /**
-     * Asocia servicios del cuarto al usuario que realiza la reserva.
-     *
-     * @param reserva los datos de la reserva.
-     */
-    private void asociarServiciosACuarto(ReservaCuartoInputDTO reserva) {
-        List<CuartoServicioDto> servicios = cuartoServicioMapper.listEntityTolistDto(
-                cuartoServicioRepository.findByCodigoCuartoEntityFk_CodigoCuarto(reserva.getCodigoCuarto())
-        );
-        for (CuartoServicioDto servicio : servicios) {
-            UsuarioServicioDto usuarioServicio = UsuarioServicioDto.builder()
-                    .id(UsuarioServicioIdDto.builder()
-                            .codigoUsuarioFk(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario())
-                            .codigoServicioFk(servicio.getCodigoServicioDtoFk().getCodigoServicio())
-                            .build())
-                    .codigoUsuarioDtoFk(UsuarioDto.builder()
-                            .codigoUsuario(reserva.getCodigoUsuarioDtoFk().getCodigoUsuario())
-                            .build())
-                    .codigoServicioDtoFk(ServicioDto.builder()
-                            .codigoServicio(servicio.getCodigoServicioDtoFk().getCodigoServicio())
-                            .build())
-                    .estadoUsuarioServicioDtoFk(EstadoUsuarioServicioDto.builder()
-                            .id(1)
-                            .build())
-                    .build();
-
-            usuarioServicioRepository.save(usuarioServicioMapper.dtoToEntity(usuarioServicio));
-        }
-    }
 }

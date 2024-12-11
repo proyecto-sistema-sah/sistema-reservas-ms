@@ -60,7 +60,6 @@ public class CrearReportePdfFacturaService implements ICrearReportePdfFacturaSer
             // Exportar a PDF
             byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
-            // Subir a S3
             facturacionDto.setUrlPdf(iAzureService.uploadFile(facturacionDto.getCodigoFacturacion(), pdfBytes));
 
             // Guardar la facturación
